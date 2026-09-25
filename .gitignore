@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+coverage
+*.tsbuildinfo
+
+# Local env files (the app keeps credentials in the browser only)
+.env
+.env.*
+*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Editors and OS
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel

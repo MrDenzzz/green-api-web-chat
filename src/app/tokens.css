@@ -1,0 +1,50 @@
+/*
+ * Design tokens. Colors follow the dark scheme of web.max.ru (theme "simple"),
+ * so the chat feels familiar to MAX users.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --color-surface: #0f0f12;
+  --color-panel: #17181c;
+  --color-field: #25262d;
+  --color-hover: rgb(255 255 255 / 6%);
+  --color-divider: rgb(255 255 255 / 12%);
+
+  /* Text */
+  --color-text: #fff;
+  --color-text-secondary: rgb(255 255 255 / 80%);
+  --color-text-tertiary: rgb(255 255 255 / 64%);
+  --color-text-negative: #ce4257;
+
+  /* Accent */
+  --color-accent: #007aff;
+  --color-accent-text: #4aa4ff;
+  --color-on-accent: #fff;
+  --color-button-secondary: #323234;
+
+  /* Message bubbles */
+  --bubble-incoming: #202022;
+  --bubble-outgoing: linear-gradient(135deg, #4429cc 0%, #2251e5 50%, #0088cc 100%);
+  --bubble-time: rgb(255 255 255 / 64%);
+
+  /* Shape */
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 18px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-s: 13px;
+  --font-size-m: 15px;
+  --font-size-l: 17px;
+  --font-size-xl: 22px;
+  --line-height: 1.4;
+
+  /* Layout and motion */
+  --sidebar-width: 360px;
+  --duration-fast: 120ms;
+}
