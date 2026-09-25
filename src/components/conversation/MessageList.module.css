@@ -1,0 +1,48 @@
+.scroller {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.scroller:focus-visible {
+  outline-offset: -2px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 8px 16px 16px;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dayLabel {
+  position: sticky;
+  top: 8px;
+  z-index: 1;
+  align-self: center;
+  margin: 8px 0;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: rgb(32 32 34 / 88%);
+  font-size: var(--font-size-s);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

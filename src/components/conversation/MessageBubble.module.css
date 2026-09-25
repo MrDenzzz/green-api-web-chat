@@ -1,0 +1,80 @@
+.incoming,
+.outgoing {
+  display: flex;
+  flex-direction: column;
+}
+
+.incoming {
+  align-items: flex-start;
+}
+
+.outgoing {
+  align-items: flex-end;
+}
+
+.bubble {
+  display: flow-root;
+  max-width: min(80%, 560px);
+  padding: 6px 10px 6px 12px;
+  border-radius: var(--radius-l);
+  overflow-wrap: anywhere;
+}
+
+.incoming .bubble {
+  border-bottom-left-radius: 6px;
+  background: var(--bubble-incoming);
+}
+
+.outgoing .bubble {
+  border-bottom-right-radius: 6px;
+  background: var(--bubble-outgoing);
+  color: #fff;
+}
+
+.sender {
+  font-size: var(--font-size-s);
+  font-weight: 600;
+  color: var(--color-accent-text);
+}
+
+.text,
+.unsupported {
+  display: inline;
+  white-space: pre-wrap;
+}
+
+.unsupported {
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+/* Floats to the end of the last line, like in MAX and Telegram. */
+.meta {
+  float: right;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin: 8px -2px -4px 10px;
+  font-size: var(--font-size-xs);
+  line-height: 1;
+  color: var(--bubble-time);
+}
+
+.failure {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 8px;
+  margin-top: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-negative);
+}
+
+.retry {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent-text);
+  font-size: inherit;
+  text-decoration: underline;
+}

@@ -1,0 +1,54 @@
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  padding: 0 16px 10px;
+  font-size: var(--font-size-s);
+  color: var(--color-text-tertiary);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-text-tertiary);
+}
+
+.connected .dot {
+  background: var(--color-success);
+}
+
+.connecting .dot,
+.reconnecting .dot {
+  background: var(--color-warning);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.error {
+  color: var(--color-text-negative);
+}
+
+.error .dot {
+  background: var(--color-danger);
+}
+
+.retry {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent-text);
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+.problem {
+  flex-basis: 100%;
+  font-size: var(--font-size-xs);
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
