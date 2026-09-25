@@ -1,0 +1,25 @@
+import { useId } from 'react';
+
+/** The app mark: a chat bubble in the colors of MAX outgoing messages. */
+export function Logo({ size = 56 }: { size?: number }) {
+  const gradientId = useId();
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#4429cc" />
+          <stop offset="0.5" stopColor="#2251e5" />
+          <stop offset="1" stopColor="#0088cc" />
+        </linearGradient>
+      </defs>
+      <path
+        fill={`url(#${gradientId})`}
+        d="M16 3C8.82 3 3 8.37 3 15c0 3.13 1.3 5.98 3.43 8.12L5.5 29l6.07-2.8A14 14 0 0 0 16 27c7.18 0 13-5.37 13-12S23.18 3 16 3Z"
+      />
+      <circle cx="10.5" cy="15" r="1.8" fill="#fff" />
+      <circle cx="16" cy="15" r="1.8" fill="#fff" />
+      <circle cx="21.5" cy="15" r="1.8" fill="#fff" />
+    </svg>
+  );
+}

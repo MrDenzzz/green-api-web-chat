@@ -1,0 +1,13 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.error {
+  padding: 10px 12px;
+  border-radius: var(--radius-m);
+  background: rgb(255 48 60 / 12%);
+  color: #ff8a93;
+  font-size: var(--font-size-s);
+}

@@ -1,0 +1,28 @@
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.icon {
+  display: inline-flex;
+  margin-bottom: 4px;
+  color: var(--color-text-tertiary);
+}
+
+.title {
+  font-size: var(--font-size-l);
+  font-weight: 600;
+}
+
+.text {
+  max-width: 320px;
+  margin-bottom: 8px;
+  font-size: var(--font-size-s);
+  color: var(--color-text-tertiary);
+}

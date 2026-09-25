@@ -16,13 +16,20 @@
   --color-text: #fff;
   --color-text-secondary: rgb(255 255 255 / 80%);
   --color-text-tertiary: rgb(255 255 255 / 64%);
-  --color-text-negative: #ce4257;
+  /* Lighter than web.max.ru's #ce4257 to keep small error texts readable (WCAG AA). */
+  --color-text-negative: #ff6b78;
 
   /* Accent */
   --color-accent: #007aff;
   --color-accent-text: #4aa4ff;
   --color-on-accent: #fff;
   --color-button-secondary: #323234;
+
+  /* Signals */
+  --color-success: #1abe43;
+  --color-warning: #fc0;
+  --color-danger: #ff303c;
+  --status-read: #7bd3ff;
 
   /* Message bubbles */
   --bubble-incoming: #202022;
@@ -46,5 +53,13 @@
 
   /* Layout and motion */
   --sidebar-width: 360px;
+  --header-height: 60px;
   --duration-fast: 120ms;
+}
+
+/* Telegram instances keep the layout and switch to Telegram's blue. */
+[data-messenger='telegram'] {
+  --color-accent: #3390ec;
+  --color-accent-text: #6ab3f3;
+  --bubble-outgoing: #2b5278;
 }
