@@ -77,6 +77,7 @@ export type ChatAction =
   | { type: 'message/sent'; chatId: string; localId: string; idMessage: string }
   | { type: 'message/failed'; chatId: string; localId: string; error: string }
   | { type: 'message/retried'; chatId: string; localId: string; timestamp: number }
+  | { type: 'sending/interrupted'; error: string }
   | { type: 'notification/received'; notification: MessageNotification | StatusNotification };
 
 export const initialChatState: ChatState = { chats: {}, messages: {}, earlyStatuses: [] };
@@ -129,6 +130,9 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
 
     case 'message/retried':
       return retry(state, action.chatId, action.localId, action.timestamp);
+
+    case 'sending/interrupted':
+      return failPending(state, action.error);
 
     case 'notification/received':
       return action.notification.kind === 'message'
@@ -270,6 +274,23 @@ function retry(state: ChatState, chatId: string, localId: string, timestamp: num
     error: undefined,
     timestamp,
   });
+}
+
+/** Pending messages restored after a reload will never get their SendMessage response. */
+function failPending(state: ChatState, error: string): ChatState {
+  const isPending = (message: ChatMessage) =>
+    message.direction === 'outgoing' && message.status === 'pending';
+  if (!Object.values(state.messages).some((list) => list.some(isPending))) return state;
+
+  const messages: Record<string, ChatMessage[]> = {};
+  for (const [chatId, list] of Object.entries(state.messages)) {
+    messages[chatId] = list.map((message) =>
+      message.direction === 'outgoing' && message.status === 'pending'
+        ? { ...message, status: 'failed', error }
+        : message,
+    );
+  }
+  return { ...state, messages };
 }
 
 function applyEarlyStatus(state: ChatState): ChatState {

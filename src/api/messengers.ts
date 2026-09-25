@@ -12,9 +12,11 @@ export interface MessengerProfile {
   typeInstance: string;
   /** Limit of the `message` field in SendMessage. */
   maxMessageLength: number;
-  /** Country calling codes CheckAccount accepts; `null` means any country. */
-  allowedCountryCodes: readonly string[] | null;
-  /** Telegram's CheckAccount can also resolve a chat by @username. */
+  /** Phone numbers CheckAccount accepts: digits in international format. */
+  phonePattern: RegExp;
+  /** Explains `phonePattern` when a number does not match it. */
+  phoneHint: string;
+  /** Telegram's CheckAccount can also find a user by @username. */
   supportsUsernameLookup: boolean;
   docsUrl: string;
 }
@@ -25,7 +27,9 @@ export const MESSENGERS: Record<MessengerId, MessengerProfile> = {
     name: 'MAX',
     typeInstance: 'v3',
     maxMessageLength: 4000,
-    allowedCountryCodes: ['7', '375'],
+    // GREEN-API supports only Russian (7) and Belarusian (375) numbers in MAX.
+    phonePattern: /^(7\d{10}|375\d{9})$/,
+    phoneHint: 'В MAX через GREEN-API можно писать на номера России (+7) и Беларуси (+375)',
     supportsUsernameLookup: false,
     docsUrl: 'https://green-api.com/v3/docs/',
   },
@@ -34,7 +38,8 @@ export const MESSENGERS: Record<MessengerId, MessengerProfile> = {
     name: 'Telegram',
     typeInstance: 'telegram',
     maxMessageLength: 4096,
-    allowedCountryCodes: null,
+    phonePattern: /^[1-9]\d{7,14}$/,
+    phoneHint: 'Введите номер в международном формате, например +7 999 123-45-67',
     supportsUsernameLookup: true,
     docsUrl: 'https://green-api.com/telegram/docs/',
   },

@@ -41,6 +41,12 @@ export const useChatStore = create<ChatStore>()(
       }),
       // There is no older schema yet: data of an unknown version is dropped instead of crashing the app.
       migrate: () => ({ ...initialChatState, activeChatId: null }),
+      onRehydrateStorage: () => (state) => {
+        state?.dispatch({
+          type: 'sending/interrupted',
+          error: 'Отправка прервалась, когда страница закрылась',
+        });
+      },
     },
   ),
 );

@@ -199,6 +199,24 @@ describe('chatReducer', () => {
       expect(messagesOf(state)[1]).toMatchObject({ status: 'pending', error: undefined });
     });
 
+    it('fails messages whose sending was cut off by closing the page', () => {
+      const state = run(addChat, queue('local-1'), {
+        type: 'sending/interrupted',
+        error: 'Отправка прервалась',
+      });
+
+      expect(messagesOf(state)[0]).toMatchObject({
+        status: 'failed',
+        error: 'Отправка прервалась',
+      });
+    });
+
+    it('keeps the state when no message was being sent', () => {
+      const state = run(addChat, queue('local-1'), sent('local-1', 'id-1'));
+
+      expect(chatReducer(state, { type: 'sending/interrupted', error: 'Ошибка' })).toBe(state);
+    });
+
     it('does not duplicate a message whose notification beat the SendMessage response', () => {
       const state = run(
         addChat,

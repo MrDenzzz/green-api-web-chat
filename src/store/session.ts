@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type { GreenApiCredentials } from '../api/client';
 import type { MessengerId } from '../api/messengers';
+import type { InstanceSettings } from '../api/schemas';
 import { useChatStore } from './chatStore';
 
 export interface Session {
@@ -13,9 +14,14 @@ export interface Session {
 
 interface SessionStore {
   session: Session | null;
-  /** Warning about the instance from service notifications; not persisted. */
+  /**
+   * Settings read while signing in. getSettings allows one request per second,
+   * so the notifications banner reuses them instead of asking again. Not persisted.
+   */
+  instanceSettings: InstanceSettings | null;
+  /** Warning about the instance from service notifications. Not persisted. */
   notice: string | null;
-  signIn: (session: Session) => void;
+  signIn: (session: Session, instanceSettings?: InstanceSettings) => void;
   signOut: () => void;
   setNotice: (notice: string | null) => void;
 }
@@ -27,14 +33,15 @@ export const useSessionStore = create<SessionStore>()(
   persist(
     (set) => ({
       session: null,
+      instanceSettings: null,
       notice: null,
-      signIn: (session) => {
+      signIn: (session, instanceSettings) => {
         // Never mix chats of different instances.
         useChatStore.getState().reset();
-        set({ session, notice: null });
+        set({ session, instanceSettings: instanceSettings ?? null, notice: null });
       },
       signOut: () => {
-        set({ session: null, notice: null });
+        set({ session: null, instanceSettings: null, notice: null });
         useChatStore.getState().reset();
         useChatStore.persist.clearStorage();
       },
