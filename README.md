@@ -1,5 +1,9 @@
 # Web Chat для MAX и Telegram на GREEN-API
 
+[![CI](https://github.com/MrDenzzz/green-api-web-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/MrDenzzz/green-api-web-chat/actions/workflows/ci.yml)
+
+**Демо:** https://mrdenzzz.github.io/green-api-web-chat/
+
 Веб-интерфейс для переписки в MAX и Telegram через [GREEN-API](https://green-api.com). Можно войти по данным инстанса, начать чат по номеру телефона, отправлять и получать текстовые сообщения и видеть статусы доставки. Интерфейс оформлен по образцу [web.max.ru](https://web.max.ru). Проект сделан как тестовое задание GREEN-API.
 
 **Стек:** React 19, TypeScript (strict), Vite, Zustand, Zod, CSS Modules, Vitest и Testing Library, ESLint и Prettier, GitHub Actions, Vercel.
@@ -34,7 +38,7 @@
 ## Быстрый старт
 
 ```bash
-git clone <адрес-репозитория> green-api-web-chat && cd green-api-web-chat
+git clone https://github.com/MrDenzzz/green-api-web-chat.git && cd green-api-web-chat
 npm ci
 npm run dev
 ```
@@ -104,11 +108,13 @@ src/
 - **API-клиент:** адреса запросов, пустые ответы, коды ошибок, таймаут, маскировка токена в ошибках.
 - **Компоненты:** форма входа, создание чата, поле ввода, баннер настроек. Есть сквозной сценарий: создать чат по номеру, отправить сообщение, получить уведомление.
 
-GitHub Actions запускает lint, проверку форматирования, typecheck, тесты и сборку на каждый push и pull request.
+GitHub Actions запускает lint, проверку форматирования, typecheck, тесты и сборку на каждый push и pull request. После успешных проверок ветки `main` он выкладывает демо на GitHub Pages.
 
 ## Деплой
 
-Проект готов к [Vercel](https://vercel.com): достаточно импортировать репозиторий. Настройки сборки уже лежат в `vercel.json` (Vite, `npm ci`, `npm run build`, папка `dist`), переменные окружения не нужны. Там же заданы заголовки безопасности: Content Security Policy и запрет встраивания страницы во фрейм.
+Демо публикуется на [GitHub Pages](https://mrdenzzz.github.io/green-api-web-chat/) из того же workflow, что и проверки. Если lint, тесты и сборка прошли, CI собирает приложение с базовым путём `/green-api-web-chat/` (переменная `BASE_PATH`) и выкладывает его. В настройках репозитория нужно один раз выбрать источник: Settings → Pages → Source → GitHub Actions.
+
+Проект готов и к [Vercel](https://vercel.com): достаточно импортировать репозиторий. Настройки сборки лежат в `vercel.json`, там же заданы заголовки безопасности: Content Security Policy и запрет встраивания страницы во фрейм. Основная ссылка на демо ведёт на GitHub Pages, потому что адреса `*.vercel.app` в России открываются не у всех провайдеров.
 
 ## Известные ограничения
 
@@ -116,7 +122,7 @@ GitHub Actions запускает lint, проверку форматирова�
 - **Нет истории.** Показывается только то, что пришло через очередь уведомлений. Очередь хранит уведомления 24 часа, более старую переписку приложение не загружает.
 - **Одна вкладка.** Если открыть приложение в нескольких вкладках, каждая будет забирать уведомления из общей очереди. Новые сообщения появятся в одной из них, остальные увидят их только после перезагрузки.
 - **Прерванная отправка.** Если закрыть страницу во время отправки, сообщение будет помечено ошибкой, даже если сервер успел его отправить. Повторная отправка может создать дубль.
-- **Данные только в этом браузере.** В каждом чате хранится до 500 сообщений. Токен лежит в localStorage и доступен скриптам страницы. Сторонних скриптов в приложении нет, а заголовки CSP ограничивают, откуда их можно загрузить. Для продакшена токен лучше держать на своём бэкенде.
+- **Данные только в этом браузере.** В каждом чате хранится до 500 сообщений. Токен лежит в localStorage и доступен скриптам страницы. Сторонних скриптов в приложении нет. На Vercel заголовки CSP ограничивают, откуда скрипты можно загрузить, а GitHub Pages свои заголовки задавать не позволяет. Для продакшена токен лучше держать на своём бэкенде.
 - **Порядок сообщений.** Время своих сообщений берётся с часов компьютера, время входящих — с сервера. Если часы заметно спешат, порядок в ленте может сбиться.
 - **Ограничения GREEN-API:** тариф «Разработчик» даёт 3 чата в месяц и 100 проверок номеров; в MAX можно писать только на номера +7 и +375; getSettings и setSettings принимают не больше одного запроса в секунду.
 
@@ -126,10 +132,12 @@ A web chat for MAX and Telegram built on [GREEN-API](https://green-api.com). It 
 
 Built with React 19, TypeScript in strict mode, Vite, Zustand, Zod and CSS Modules. Tested with Vitest and Testing Library.
 
+**Demo:** https://mrdenzzz.github.io/green-api-web-chat/
+
 **Quick start**
 
 ```bash
-git clone <repository-url> green-api-web-chat && cd green-api-web-chat
+git clone https://github.com/MrDenzzz/green-api-web-chat.git && cd green-api-web-chat
 npm ci
 npm run dev
 ```
