@@ -4,6 +4,17 @@
   gap: 16px;
 }
 
+.advanced[open] .summary {
+  margin-bottom: 12px;
+}
+
+.summary {
+  width: fit-content;
+  font-size: var(--font-size-s);
+  color: var(--color-accent-text);
+  cursor: pointer;
+}
+
 .error {
   padding: 10px 12px;
   border-radius: var(--radius-m);

@@ -25,7 +25,7 @@ export function LoginScreen() {
               .
             </li>
             <li>Авторизуйте инстанс: отсканируйте QR-код в приложении мессенджера.</li>
-            <li>Скопируйте apiUrl, idInstance и apiTokenInstance со страницы инстанса.</li>
+            <li>Скопируйте idInstance и apiTokenInstance со страницы инстанса.</li>
           </ol>
           <p>Данные для входа хранятся только в этом браузере.</p>
         </section>

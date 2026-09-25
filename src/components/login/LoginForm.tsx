@@ -1,4 +1,5 @@
 import { useState, type ChangeEvent, type SubmitEvent } from 'react';
+import { flushSync } from 'react-dom';
 import {
   createGreenApiClient,
   type GreenApiClient,
@@ -7,7 +8,12 @@ import {
 import { useSessionStore } from '../../store/session';
 import { Button } from '../ui/Button';
 import { TextField } from '../ui/TextField';
-import { validateCredentials, type CredentialsErrors, type CredentialsForm } from './credentials';
+import {
+  DEFAULT_API_URL,
+  validateCredentials,
+  type CredentialsErrors,
+  type CredentialsForm,
+} from './credentials';
 import styles from './LoginForm.module.css';
 import { verifyInstance } from './verifyInstance';
 
@@ -16,30 +22,22 @@ interface LoginFormProps {
   createClient?: (credentials: GreenApiCredentials) => GreenApiClient;
 }
 
-const FIELDS = [
-  {
-    name: 'apiUrl',
-    placeholder: 'https://3100.api.green-api.com',
-    type: 'url',
-    inputMode: 'url',
-  },
-  { name: 'idInstance', placeholder: '3100123456', type: 'text', inputMode: 'numeric' },
-  {
-    name: 'apiTokenInstance',
-    placeholder: 'Ключ доступа из личного кабинета',
-    type: 'password',
-    inputMode: 'text',
-  },
-] as const;
+/** In the order the first invalid field gets focus. */
+const FIELD_ORDER = ['idInstance', 'apiTokenInstance', 'apiUrl'] as const;
 
-const EMPTY_FORM: CredentialsForm = { apiUrl: '', idInstance: '', apiTokenInstance: '' };
+const INITIAL_FORM: CredentialsForm = {
+  apiUrl: DEFAULT_API_URL,
+  idInstance: '',
+  apiTokenInstance: '',
+};
 
 export function LoginForm({ createClient = createGreenApiClient }: LoginFormProps) {
   const signIn = useSessionStore((state) => state.signIn);
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState<CredentialsErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
+  const [apiUrlShown, setApiUrlShown] = useState(false);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -51,9 +49,14 @@ export function LoginForm({ createClient = createGreenApiClient }: LoginFormProp
     event.preventDefault();
     const validation = validateCredentials(form);
     if (!validation.ok) {
-      setErrors(validation.errors);
-      const firstInvalid = FIELDS.find((field) => validation.errors[field.name]);
-      const input = firstInvalid && event.currentTarget.elements.namedItem(firstInvalid.name);
+      const { errors: fieldErrors } = validation;
+      // Render the errors (and open the API address section) before moving focus there.
+      flushSync(() => {
+        setErrors(fieldErrors);
+        if (fieldErrors.apiUrl) setApiUrlShown(true);
+      });
+      const firstInvalid = FIELD_ORDER.find((name) => fieldErrors[name]);
+      const input = firstInvalid && event.currentTarget.elements.namedItem(firstInvalid);
       if (input instanceof HTMLInputElement) input.focus();
       return;
     }
@@ -72,6 +75,14 @@ export function LoginForm({ createClient = createGreenApiClient }: LoginFormProp
     }
   };
 
+  const fieldProps = {
+    onChange: handleChange,
+    disabled: checking,
+    autoComplete: 'off',
+    autoCapitalize: 'none',
+    spellCheck: false,
+  };
+
   return (
     <form
       className={styles.form}
@@ -79,23 +90,46 @@ export function LoginForm({ createClient = createGreenApiClient }: LoginFormProp
       noValidate
       aria-label="Вход"
     >
-      {FIELDS.map((field) => (
+      <TextField
+        label="idInstance"
+        name="idInstance"
+        inputMode="numeric"
+        placeholder="3100123456"
+        value={form.idInstance}
+        error={errors.idInstance}
+        {...fieldProps}
+      />
+      <TextField
+        label="apiTokenInstance"
+        name="apiTokenInstance"
+        type="password"
+        placeholder="Ключ доступа из личного кабинета"
+        value={form.apiTokenInstance}
+        error={errors.apiTokenInstance}
+        {...fieldProps}
+      />
+
+      <details
+        className={styles.advanced}
+        open={apiUrlShown}
+        onToggle={(event) => {
+          setApiUrlShown(event.currentTarget.open);
+        }}
+      >
+        <summary className={styles.summary}>Другой адрес API</summary>
         <TextField
-          key={field.name}
-          label={field.name}
-          name={field.name}
-          type={field.type}
-          inputMode={field.inputMode}
-          placeholder={field.placeholder}
-          value={form[field.name]}
-          onChange={handleChange}
-          error={errors[field.name]}
-          disabled={checking}
-          autoComplete="off"
-          autoCapitalize="none"
-          spellCheck={false}
+          label="apiUrl"
+          name="apiUrl"
+          type="url"
+          inputMode="url"
+          placeholder={DEFAULT_API_URL}
+          value={form.apiUrl}
+          error={errors.apiUrl}
+          hint="Нужен, только если общий адрес не подходит: свой apiUrl инстанса указан в личном кабинете."
+          {...fieldProps}
         />
-      ))}
+      </details>
+
       {formError && (
         <p className={styles.error} role="alert">
           {formError}

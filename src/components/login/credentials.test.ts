@@ -37,13 +37,19 @@ describe('validateCredentials', () => {
     });
   });
 
+  it('falls back to the common API address when none is given', () => {
+    expect(
+      validateCredentials({ apiUrl: '  ', idInstance: '3100000001', apiTokenInstance: 'token' }),
+    ).toMatchObject({ ok: true, credentials: { apiUrl: 'https://api.green-api.com' } });
+  });
+
   it('reports every problem at once', () => {
     expect(
       validateCredentials({ apiUrl: 'ftp://host', idInstance: '31-00', apiTokenInstance: 'a b' }),
     ).toEqual({
       ok: false,
       errors: {
-        apiUrl: 'Нужен адрес вида https://3100.api.green-api.com',
+        apiUrl: 'Нужен адрес вида https://api.green-api.com',
         idInstance: 'idInstance состоит только из цифр',
         apiTokenInstance: 'В токене не должно быть пробелов',
       },

@@ -29,16 +29,27 @@ function renderForm(overrides: Partial<GreenApiClient> = {}) {
   return { client, createClient, user: userEvent.setup() };
 }
 
-/** Pastes the credentials, as people do when they copy them from the GREEN-API console. */
+/**
+ * Pastes the credentials, as people do when they copy them from the GREEN-API console.
+ * `apiUrl` is typed into the collapsed "Другой адрес API" section only when given.
+ */
 async function signIn(
   user: ReturnType<typeof userEvent.setup>,
-  { apiUrl = 'https://3100.api.green-api.com/', idInstance = '3100000001', token = TOKEN } = {},
+  {
+    idInstance = '3100000001',
+    token = TOKEN,
+    apiUrl,
+  }: { idInstance?: string; token?: string; apiUrl?: string } = {},
 ) {
-  const fields = { apiUrl, idInstance, apiTokenInstance: token };
-  for (const [label, value] of Object.entries(fields)) {
+  for (const [label, value] of Object.entries({ idInstance, apiTokenInstance: token })) {
     if (!value) continue;
     await user.click(screen.getByLabelText(label));
     await user.paste(value);
+  }
+  if (apiUrl !== undefined) {
+    await user.click(screen.getByText('Другой адрес API'));
+    await user.clear(screen.getByLabelText('apiUrl'));
+    await user.paste(apiUrl);
   }
   await user.click(screen.getByRole('button', { name: 'Войти' }));
 }
@@ -48,38 +59,33 @@ describe('LoginForm', () => {
     useSessionStore.getState().signOut();
   });
 
-  it('asks for every field and does not call the API', async () => {
+  it('asks only for idInstance and apiTokenInstance, as the task describes', () => {
+    renderForm();
+
+    expect(screen.getByLabelText('idInstance')).toBeVisible();
+    expect(screen.getByLabelText('apiTokenInstance')).toBeVisible();
+    expect(screen.getByLabelText('apiUrl')).not.toBeVisible();
+    expect(screen.getByLabelText('apiUrl')).toHaveValue('https://api.green-api.com');
+  });
+
+  it('asks for both fields and does not call the API', async () => {
     const { user, createClient } = renderForm();
 
-    await signIn(user, { apiUrl: '', idInstance: '', token: '' });
+    await signIn(user, { idInstance: '', token: '' });
 
-    expect(screen.getByText('Укажите apiUrl')).toBeInTheDocument();
     expect(screen.getByText('Укажите idInstance')).toBeInTheDocument();
     expect(screen.getByText('Укажите apiTokenInstance')).toBeInTheDocument();
-    expect(screen.getByLabelText('apiUrl')).toHaveFocus();
+    expect(screen.getByLabelText('idInstance')).toHaveFocus();
     expect(createClient).not.toHaveBeenCalled();
   });
 
-  it('checks the format of the fields', async () => {
-    const { user } = renderForm();
-
-    await signIn(user, { apiUrl: 'http://3100.api.green-api.com', idInstance: '31-00' });
-
-    expect(screen.getByLabelText('apiUrl')).toHaveAccessibleDescription(
-      'Нужен адрес вида https://3100.api.green-api.com',
-    );
-    expect(screen.getByLabelText('idInstance')).toHaveAccessibleDescription(
-      'idInstance состоит только из цифр',
-    );
-  });
-
-  it('signs in to a MAX instance with normalized credentials', async () => {
+  it('signs in to a MAX instance through the common API address', async () => {
     const { user, createClient } = renderForm();
 
     await signIn(user);
 
     const credentials = {
-      apiUrl: 'https://3100.api.green-api.com',
+      apiUrl: 'https://api.green-api.com',
       idInstance: '3100000001',
       apiTokenInstance: TOKEN,
     };
@@ -89,6 +95,30 @@ describe('LoginForm', () => {
       messengerId: 'max',
       wid: '79991234567@c.us',
     });
+  });
+
+  it("uses the instance's own API address when given", async () => {
+    const { user, createClient } = renderForm();
+
+    await signIn(user, { apiUrl: 'https://3100.api.green-api.com/' });
+
+    expect(createClient).toHaveBeenCalledWith(
+      expect.objectContaining({ apiUrl: 'https://3100.api.green-api.com' }),
+    );
+  });
+
+  it('opens the API address section when that address is wrong', async () => {
+    const { user } = renderForm();
+
+    await signIn(user, { idInstance: '31-00', apiUrl: 'http://3100.api.green-api.com' });
+
+    expect(screen.getByLabelText('idInstance')).toHaveAccessibleDescription(
+      'idInstance состоит только из цифр',
+    );
+    expect(screen.getByLabelText('apiUrl')).toBeVisible();
+    expect(screen.getByLabelText('apiUrl')).toHaveAccessibleDescription(
+      'Нужен адрес вида https://api.green-api.com',
+    );
   });
 
   it('recognises a Telegram instance', async () => {
@@ -142,6 +172,6 @@ describe('LoginForm', () => {
     const button = screen.getByRole('button', { name: 'Проверяем инстанс…' });
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute('aria-busy', 'true');
-    expect(screen.getByLabelText('apiUrl')).toBeDisabled();
+    expect(screen.getByLabelText('idInstance')).toBeDisabled();
   });
 });

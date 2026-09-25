@@ -7,16 +7,17 @@ export type CredentialsErrors = Partial<Record<keyof GreenApiCredentials, string
 export type CredentialsValidation =
   { ok: true; credentials: GreenApiCredentials } | { ok: false; errors: CredentialsErrors };
 
+/** Common GREEN-API host; it serves MAX and Telegram instances alike. */
+export const DEFAULT_API_URL = 'https://api.green-api.com';
+
 export function validateCredentials(form: CredentialsForm): CredentialsValidation {
-  const apiUrl = normalizeApiUrl(form.apiUrl);
+  const apiUrl = form.apiUrl.trim() === '' ? DEFAULT_API_URL : normalizeApiUrl(form.apiUrl);
   const idInstance = form.idInstance.trim();
   const apiTokenInstance = form.apiTokenInstance.trim();
   const errors: CredentialsErrors = {};
 
-  if (form.apiUrl.trim() === '') {
-    errors.apiUrl = 'Укажите apiUrl';
-  } else if (apiUrl === null) {
-    errors.apiUrl = 'Нужен адрес вида https://3100.api.green-api.com';
+  if (apiUrl === null) {
+    errors.apiUrl = 'Нужен адрес вида https://api.green-api.com';
   }
 
   if (idInstance === '') {
