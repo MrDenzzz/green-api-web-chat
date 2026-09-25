@@ -156,6 +156,7 @@ describe('createGreenApiClient', () => {
       [403, '', 'forbidden'],
       [403, 'Your account is suspended', 'account-suspended'],
       [404, '', 'not-found'],
+      [408, '', 'timeout'],
       [429, '', 'rate-limited'],
       [466, '{"message":"Monthly quota has been exceeded"}', 'quota-exceeded'],
       [400, 'Message cannot be received because custom webhook url is set', 'webhook-url-set'],

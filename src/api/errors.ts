@@ -68,6 +68,9 @@ export function reasonFromResponse(status: number, details = ''): GreenApiErrorR
       return 'forbidden';
     case 404:
       return 'not-found';
+    // The server gave up on the request, e.g. while the instance restarts after setSettings.
+    case 408:
+      return 'timeout';
     case 429:
       return 'rate-limited';
     case 466:
